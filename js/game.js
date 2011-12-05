@@ -26,8 +26,7 @@ var BUSTED_PLAY = (function() {
             config.half_height = th / 2;
 
             game.$stage.css({
-                fontSize: (config.width / 400) + 'em',
-                lineHeight: (config.width / 300) + 'em'
+                fontSize: (config.width / 400) + 'em'
             });
         }
     };
@@ -44,7 +43,6 @@ var BUSTED_PLAY = (function() {
     scenes = {
         LOADING: 'loading',
         MAIN: 'main',
-        ABOUT: 'about',
         SINGLE: 'single'
     };
 
@@ -57,7 +55,9 @@ var BUSTED_PLAY = (function() {
      *
      ============================================================================= */
 
-    components = {};
+    components = {
+        ABOUT: 'About'
+    };
 
     /** =============================================================================
 
@@ -184,6 +184,126 @@ var BUSTED_PLAY = (function() {
                         crafty_game.defineComponent[components[i]]();
                     }
                 }
+            },
+
+            /** =============================================================================
+
+             Define the ABOUT component
+
+             *  @module defineComponent
+             *  @method About
+             *  @return {Void}
+             *
+             ============================================================================= */
+
+            About: function() {
+                Crafty.c("About", {
+
+                    /** =============================================================================
+
+                     Init function specifies and loads required components
+
+                     *  @module defineComponent
+                     *  @comp About
+                     *  @method init
+                     *  @return {Void}
+                     *
+                     ============================================================================= */
+
+                    init: function() {
+                        this.requires("DOM, HTML, Tween");
+                    },
+
+                    /** =============================================================================
+
+                     About function retrieves the version from external file via http request and
+                     animates the component onto the viewable scene.
+
+                     *  @module defineComponent
+                     *  @comp About
+                     *  @method about
+                     *  @return {Object}
+                     *
+                     ============================================================================= */
+
+                    about: function() {
+                        var that = this,
+
+                            // a function to render the template and bind the back button's click to remove()
+                            render = function(data) {
+                                var _template_options = {
+                                    data: data,
+                                    template: "#about-component-template"
+                                },
+                                html = helpers.compileTemplate(_template_options);
+
+                                // replace empty component with template + data
+                                that.replace(html);
+
+                                // bind the back button click to remove()
+                                $("#about-component-back").bind("click", function() {
+                                    that.remove();
+                                });
+
+                                // animate the component to desired location
+                                that.attr({x:config.width, y:config.height, rotation: 25})
+                                    .tween({x: config.half_width, y: config.half_height, rotation: 0}, 15);
+
+                                return that;
+                            };
+                        cache.about = cache.about || {};
+                        cache.about.version = cache.about.version || "";
+
+                        if (!cache.about.version.length) {
+
+                            // retrieve version info from external file
+                            $.getJSON('version.json?_=' + Math.round(new Date().getTime()), function(response) {
+
+                                // specify version into the cache to speed up later recovery
+                                cache.about = response;
+
+                                //after we get our response lets continue rendering
+                                that = render(cache.about);
+                            });
+                        } else {
+
+                            // we already have the version stored so lets just render
+                            that = render(cache.about);
+                        }
+
+                        return that;
+                    },
+
+                    /** =============================================================================
+
+                     Render outputs the about information
+
+                     *  @module defineComponent
+                     *  @comp About
+                     *  @method remove
+                     *  @return {Object}
+                     *
+                     ============================================================================= */
+
+                    remove: function() {
+                        var that = this;
+
+                        // listen for TweenEnd trigger to allow tween to complete before destroy()
+                        that.bind("TweenEnd", function (k) {
+                            if (k === 'rotation') {
+
+                                // if rotation has finished, go ahead and destroy the component; unbind TweenEnd
+                                that.unbind("TweenEnd");
+                                Crafty(components.ABOUT).destroy();
+                            }
+                        });
+
+                        // animate component off of display
+                        that.tween({x:config.width, y:config.height, rotation: 25}, 15);
+
+                        return that;
+                    }
+                });
             }
         },
 
@@ -251,23 +371,28 @@ var BUSTED_PLAY = (function() {
 
             main: function() {
                 Crafty.scene("main", function() {
-                    //
-                });
-            },
+                    var main = Crafty.e("2D, DOM, HTML").attr({w:config.width, h:config.height}),
+                    _template_options = {
+                        data: {},
+                        template: "#main-scene-template"
+                    },
+                    html = helpers.compileTemplate(_template_options);
+                    main.replace(html);
 
-            /** =============================================================================
+                    //bind click event to about button that loads about scene
+                    $("#about").bind("click", function() {
+                        var about = Crafty(components.ABOUT);
 
-             Define the ABOUT scene
+                        if (about.length) {
 
-             *  @module defineScene
-             *  @method about
-             *  @return {Void}
-             *
-             ============================================================================= */
+                            // if about component already exists remove it
+                            Crafty(about[0]).remove();
+                        } else {
 
-            about: function() {
-                Crafty.scene("about", function() {
-                    //
+                            // else render the about componenet
+                            Crafty.e(components.ABOUT).about();
+                        }
+                    });
                 });
             },
 

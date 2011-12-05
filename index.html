@@ -23,7 +23,7 @@
 
     <!-- Crafty Stage Container
     ================================================== -->
-    <div id="cr-stage">Busted Play!</div>
+    <div id="cr-stage"></div>
 
 
     <!-- Load JavaScript
@@ -45,6 +45,33 @@
 
     <!-- Define Templates
     ================================================== -->
+
+    <script id="main-scene-template" type="text/x-handlebars-template">
+        <div id="main-scene">
+            <div class="clearfix">
+                <h1>Busted Play</h1>
+                <ul class="clearfix">
+                    <li><a href="javascript://">Single Player</a></li>
+                    <li><a href="javascript://" class="disabled">Multiplayer</a></li>
+                    <li><a id="about" href="javascript://">About</a></li>
+                </ul>
+            </div>
+        </div>
+    </script>
+
+    <!-- A template for ABOUT component -->
+    <script id="about-component-template" type="text/x-handlebars-template">
+        <div id="about-component">
+            <div class="container">
+                <div class="clearfix">
+                    <p>Version {{version}}</p>
+                    <a href="javascript://" id="about-component-back">Back</a>
+                </div>
+                <h3>{{title}}</h3>
+                <p>Copyright {{copyright}}, {{author}}<br/>All rights reserved.</p>
+            </div>
+        </div>
+    </script>
 
 </body>
 
