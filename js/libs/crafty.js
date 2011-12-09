@@ -3062,6 +3062,8 @@ Crafty.extend({
 			Crafty.stage.elem.appendChild(Crafty.stage.inner);
 			Crafty.stage.inner.style.position = "absolute";
 			Crafty.stage.inner.style.zIndex = "1";
+            Crafty.stage.inner.style.width = "100%";
+            Crafty.stage.inner.style.height = "100%";
 
 			//css style
 			elem.width = this.width + "px";
@@ -3097,6 +3099,7 @@ Crafty.extend({
 
 			} else {
 				elem.position = "relative";
+
 				//find out the offset position of the stage
 				offset = Crafty.DOM.inner(Crafty.stage.elem);
 				Crafty.stage.x = offset.x;

@@ -211,7 +211,9 @@ var BUSTED_PLAY = (function() {
                      ============================================================================= */
 
                     init: function() {
-                        this.requires("DOM, HTML, Tween");
+                        this.requires("HTML, Tween")
+                            // set w to be 33% of viewport height to be 45% and x and y to be off the screen to the bottom right
+                            .attr({w:config.width * .33, h:config.height * .45, x:config.width, y:config.height, rotation: 25});
                     },
 
                     /** =============================================================================
@@ -231,26 +233,34 @@ var BUSTED_PLAY = (function() {
 
                             // a function to render the template and bind the back button's click to remove()
                             render = function(data) {
+                                console.log(that.x + '-' + that.y);
                                 var _template_options = {
                                     data: data,
                                     template: "#about-component-template"
                                 },
+                                ht,
+                                wd,
                                 html = helpers.compileTemplate(_template_options);
 
                                 // replace empty component with template + data
                                 that.replace(html);
+                                console.log('replaced');
+                                console.log(that.x + '-' + that.y);
 
                                 // bind the back button click to remove()
                                 $("#about-component-back").bind("click", function() {
                                     that.remove();
                                 });
 
+                                ht = that.w / 2;
+                                wd = that.h / 2;
+
                                 // animate the component to desired location
-                                that.attr({x:config.width, y:config.height, rotation: 25})
-                                    .tween({x: config.half_width, y: config.half_height, rotation: 0}, 15);
+                                that.tween({x: config.half_width-wd, y: config.half_height-ht, rotation: 0}, 20);
 
                                 return that;
                             };
+
                         cache.about = cache.about || {};
                         cache.about.version = cache.about.version || "";
 
@@ -287,19 +297,20 @@ var BUSTED_PLAY = (function() {
 
                     remove: function() {
                         var that = this;
-
+                        console.log('remove called');
                         // listen for TweenEnd trigger to allow tween to complete before destroy()
                         that.bind("TweenEnd", function (k) {
                             if (k === 'rotation') {
-
                                 // if rotation has finished, go ahead and destroy the component; unbind TweenEnd
+
                                 that.unbind("TweenEnd");
+                                console.log('tweenend');
                                 Crafty(components.ABOUT).destroy();
                             }
                         });
 
                         // animate component off of display
-                        that.tween({x:config.width, y:config.height, rotation: 25}, 15);
+                        that.tween({x:config.width, y:config.height, rotation: 25}, 20);
 
                         return that;
                     }
@@ -371,13 +382,13 @@ var BUSTED_PLAY = (function() {
 
             main: function() {
                 Crafty.scene("main", function() {
-                    var main = Crafty.e("2D, DOM, HTML").attr({w:config.width, h:config.height}),
+                    var main_obj = Crafty.e("2D, DOM, HTML").attr({w:config.width, h:config.height}),
                     _template_options = {
                         data: {},
                         template: "#main-scene-template"
                     },
                     html = helpers.compileTemplate(_template_options);
-                    main.replace(html);
+                    main_obj.replace(html);
 
                     //bind click event to about button that loads about scene
                     $("#about").bind("click", function() {

@@ -163,7 +163,7 @@ html, body {
             margin: 0;
             padding: 0;
             &:active {
-                text-shadow: 0 0 300px #FFF;
+                opacity: .5;
             }
         }
         a.disabled {
@@ -182,7 +182,8 @@ html, body {
     font-family: 'jrhandRegular';
     .chalk-gradient();
     div.container {
-        width: 7em;
+        width: 100%;
+        height: 100%;
         padding: .7em;
         margin: auto;
         position: relative;
@@ -234,14 +235,14 @@ html, body {
         opacity:1;
     }
     h3 {
-        font-size: 1em;
+        font-size: 150%;
         line-height: 1;
         letter-spacing: -.05em;
         margin: 1em 2em;
         text-align: center;
     }
     p {
-        font-size: .5em;
+        font-size: 75%;
         line-height: 1;
         margin: 0;
     }
@@ -258,7 +259,7 @@ html, body {
             color: #333;
             padding: 0;
             margin: 0;
-            font-size: .5em;
+            font-size: 75%;
             .transform(rotate(-8deg));
         }
     }
